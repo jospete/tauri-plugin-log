@@ -186,3 +186,42 @@ export function attachConsole() {
     }
   });
 }
+
+function noop(_value: any) {
+}
+
+export class Logger {
+
+  private readonly options: LogOptions;
+
+  constructor(
+    tag: string,
+    private readonly errorHandler: (err: any) => void = noop
+  ) {
+    this.options = {file: tag};
+  }
+
+  private run(action: () => Promise<any>): void {
+    action().catch(this.errorHandler);
+  }
+
+  public trace(message: string): void {
+    this.run(() => trace(message, this.options));
+  }
+
+  public debug(message: string): void {
+    this.run(() => debug(message, this.options));
+  }
+
+  public info(message: string): void {
+    this.run(() => info(message, this.options));
+  }
+
+  public warn(message: string): void {
+    this.run(() => warn(message, this.options));
+  }
+
+  public error(message: string): void {
+    this.run(() => error(message, this.options));
+  }
+}
